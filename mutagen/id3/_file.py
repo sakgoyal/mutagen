@@ -12,7 +12,7 @@ from __future__ import annotations
 import struct
 from enum import IntEnum
 from io import BytesIO
-from typing import override
+from typing import TYPE_CHECKING, override
 
 import mutagen
 from mutagen._filething import FileThing
@@ -24,12 +24,13 @@ from mutagen._util import (
     loadfile,
     read_full,
 )
-from mutagen.id3._frames import Frame
 
 from ._id3v1 import MakeID3v1, find_id3v1
 from ._tags import ID3Header, ID3Tags
 from ._util import BitPaddedInt, ID3NoHeaderError, ID3SaveConfig, ID3UnsupportedVersionError, error
 
+if TYPE_CHECKING:
+    from mutagen.id3._frames import Frame
 
 class ID3v1SaveOptions(IntEnum):
 

@@ -16,11 +16,10 @@ from re import Pattern
 from struct import pack, unpack
 from typing import TYPE_CHECKING, Final, Protocol, cast, final, override
 
-from mutagen.id3._frames import ASPI
-from mutagen.id3._tags import ID3Header, ID3Tags
+from mutagen.id3._frames import ASPI, Frame
 
 if TYPE_CHECKING:
-    from mutagen.id3._frames import Frame
+    from mutagen.id3._tags import ID3Header, ID3Tags
 
 from .._util import (
     bchr,
@@ -665,6 +664,7 @@ class ID3FramesSpec(Spec[list[Frame]]):
 
     @override
     def validate(self, frame: Frame, value: ID3Tags | object | None):
+        from ._tags import ID3Tags
         if isinstance(value, ID3Tags):
             return value
 

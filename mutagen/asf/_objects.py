@@ -6,25 +6,30 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
+from __future__ import annotations
+
 import struct
 from io import BytesIO
-from typing import cast, override
+from typing import TYPE_CHECKING, cast, override
 
-from mutagen._tags import PaddingFunction, PaddingInfo
+from mutagen import PaddingInfo
 from mutagen._util import cdata, get_size
 
-from . import ASF
 from ._attrs import ASFBaseAttribute, ASFUnicodeAttribute
 from ._util import CODECS, ASFError, ASFHeaderError, bytes2guid, guid2bytes
 
+if TYPE_CHECKING:
+    from mutagen._tags import PaddingFunction
+
+    from . import ASF
 
 class BaseObject:
     """Base ASF object."""
 
     GUID: bytes
-    _TYPES: "dict[bytes, type[BaseObject]]" = {}
+    _TYPES: dict[bytes, type[BaseObject]] = {}
 
-    objects: list["BaseObject"] = []
+    objects: list[BaseObject] = []
     data: bytes = b""
 
     def parse(self, asf: ASF, data: bytes) -> None:
@@ -34,7 +39,7 @@ class BaseObject:
         data = self.GUID + struct.pack("<Q", len(self.data) + 24) + self.data
         return data
 
-    def get_child(self, guid: bytes) -> 'BaseObject | None':
+    def get_child(self, guid: bytes) -> BaseObject | None:
         for obj in self.objects:
             if guid == obj.GUID:
                 return obj
@@ -46,7 +51,7 @@ class BaseObject:
         return other
 
     @classmethod
-    def _get_object(cls, guid: bytes) -> "BaseObject":
+    def _get_object(cls, guid: bytes) -> BaseObject:
         if guid in cls._TYPES:
             return cls._TYPES[guid]()
         else:
@@ -67,6 +72,8 @@ class BaseObject:
 
 class UnknownObject(BaseObject):
     """Unknown ASF object."""
+
+    GUID: bytes
 
     def __init__(self, guid: bytes):
         super().__init__()

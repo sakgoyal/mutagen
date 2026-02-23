@@ -25,7 +25,7 @@ from typing import (
     Any,
     Final,
     Literal,
-    NoReturn,
+    Never,
     cast,
     final,
     override,
@@ -47,6 +47,8 @@ def endswith(text: str | bytes, end: str | bytes) -> bool:
             end = str(end).encode("ascii")
         return str(text).endswith(str(end))
 
+def reraise(tp: type[BaseException], value: BaseException, tb: TracebackType | None) -> Never:
+    raise tp(value).with_traceback(tb)
 
 def bchr(x: int) -> bytes:
     return bytes([x])
@@ -130,7 +132,7 @@ def fileobj_name(fileobj: BytesIO) -> str:
     return value
 
 
-def loadfile(method=True, writable=False, create=False):
+def loadfile[**P, R](method: bool = True, writable: bool = False, create: bool = False):
     """A decorator for functions taking a `filething` as a first argument.
 
     Passes a FileThing instance as the first argument to the wrapped function.
@@ -143,31 +145,40 @@ def loadfile(method=True, writable=False, create=False):
             a new empty file.
     """
 
-    def convert_file_args(args, kwargs):
-        filething = args[0] if args else None
-        filename = kwargs.pop("filename", None)
-        fileobj = kwargs.pop("fileobj", None)
+    def convert_file_args(
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any]
+    ):
+        filething: FileThing | None = args[0] if args else None
+        filename: str = kwargs.pop("filename", None)
+        fileobj: BytesIO = kwargs.pop("fileobj", None)
         return filething, filename, fileobj, args[1:], kwargs
 
-    def wrap(func):
+    def wrap(func: Callable[P, R]) -> Callable[P, R]:
 
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            filething, filename, fileobj, args, kwargs = \
+        def wrapper(self, *args: P.args, **kwargs: P.kwargs) -> R:
+            # We explicitly handle 'self' here because method=True
+            filething, filename, fileobj, remaining_args, new_kwargs = \
                 convert_file_args(args, kwargs)
+
             with _openfile(self, filething, filename, fileobj,
                            writable, create) as h:
-                return func(self, h, *args, **kwargs)
+                # We cast remaining_args to verify they match P.args logic dynamically
+                return func(self, h, *remaining_args, **new_kwargs)
 
         @wraps(func)
-        def wrapper_func(*args, **kwargs):
-            filething, filename, fileobj, args, kwargs = \
+        def wrapper_func(*args: P.args, **kwargs: P.kwargs) -> R:
+            filething, filename, fileobj, remaining_args, new_kwargs = \
                 convert_file_args(args, kwargs)
+
             with _openfile(None, filething, filename, fileobj,
                            writable, create) as h:
-                return func(h, *args, **kwargs)
+                return func(h, *remaining_args, **new_kwargs)
 
-        return wrapper if method else wrapper_func
+        if method:
+            return cast(Callable[P, R], wrapper)
+        return cast(Callable[P, R], wrapper_func)
 
     return wrap
 
@@ -339,7 +350,7 @@ class DictMixin:
         return [self[k] for k in self.keys()]
 
     def items(self):
-        return list(zip(self.keys(), self.values()))
+        return list(zip(self.keys(), self.values(), strict=False))
 
     def clear(self) -> None:
         for key in list(self.keys()):

@@ -238,10 +238,7 @@ class Frame:
         if config is None:
             config = ID3SaveConfig()
 
-        if config.v2_version == 3:
-            frame = self._get_v23_frame(sep=config.v23_separator)
-        else:
-            frame = self
+        frame = self._get_v23_frame(sep=config.v23_separator) if config.v2_version == 3 else self
 
         data: list[bytes] = []
         for writer in self._framespec:

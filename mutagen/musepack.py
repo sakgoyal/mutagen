@@ -267,10 +267,7 @@ class MusepackInfo(StreamInfo):
                 raise MusepackHeaderError("not a Musepack file")
             self.bitrate = (header_dword >> 23) & 0x01FF
             self.sample_rate = 44100
-            if self.version >= 5:
-                frames = cdata.uint_le(header[4:8])
-            else:
-                frames = cdata.ushort_le(header[6:8])
+            frames = cdata.uint_le(header[4:8]) if self.version >= 5 else cdata.ushort_le(header[6:8])
             if self.version < 6:
                 frames -= 1
         self.channels = 2

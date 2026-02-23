@@ -60,14 +60,9 @@ def split_escape(string: str | bytes, sep: str | bytes, maxsplit: int | None = N
 
 class SignalHandler:
 
-    _interrupted: bool
-    _nosig: bool
-    _init: bool
-
-    def __init__(self):
-        self._interrupted = False
-        self._nosig = False
-        self._init = False
+    _interrupted: bool = False
+    _nosig: bool = False
+    _init: bool = False
 
     def init(self) -> None:
         _ = signal.signal(signal.SIGINT, self._handler)

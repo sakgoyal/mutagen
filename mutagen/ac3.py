@@ -240,9 +240,8 @@ class AC3Info(StreamInfo):
             r.skip(5)  # Dialogue Normalization, ch2
             if r.bits(1):  # Compression Gain Word Exists, ch2
                 r.skip(8)  # Compression Gain Word, ch2
-        if frame_type == EAC3FrameType.DEPENDENT:
-            if r.bits(1):  # chanmap exists
-                r.skip(16)  # chanmap
+        if frame_type == EAC3FrameType.DEPENDENT and r.bits(1):  # chanmap exists
+            r.skip(16)  # chanmap
         if r.bits(1):  # mixmdate, 1 Bit
             # FIXME: Handle channel dependent fields
             return
@@ -262,19 +261,17 @@ class AC3Info(StreamInfo):
                 # Room Type, 2 Bits
                 # adconvtyp, 1 Bit
                 r.skip(8)
-            if channel_mode == ChannelMode.DUALMONO:
-                if r.bits(1):  # Audio Production Information Exists, ch2
-                    # Mixing Level, ch2, 5 Bits
-                    # Room Type, ch2, 2 Bits
-                    # adconvtyp, ch2, 1 Bit
-                    r.skip(8)
+            if channel_mode == ChannelMode.DUALMONO and r.bits(1):  # Audio Production Information Exists, ch2
+                # Mixing Level, ch2, 5 Bits
+                # Room Type, ch2, 2 Bits
+                # adconvtyp, ch2, 1 Bit
+                r.skip(8)
             if sr_code < 3:  # if not half sample rate
                 r.skip(1)  # sourcefscod
         if frame_type == EAC3FrameType.INDEPENDENT and numblocks_code == 3:
             r.skip(1)  # convsync
-        if frame_type == EAC3FrameType.AC3_CONVERT and numblocks_code != 3:
-            if r.bits(1):  # blkid
-                r.skip(6)  # frmsizecod
+        if frame_type == EAC3FrameType.AC3_CONVERT and numblocks_code != 3 and r.bits(1):  # blkid
+            r.skip(6)  # frmsizecod
         if r.bits(1):  # Additional Bit Stream Information Exists
             addbsil = r.bits(6)  # Additional Bit Stream Information Length
             r.skip((addbsil + 1) * 8)

@@ -176,16 +176,10 @@ def MakeID3v1(id3: dict[str, Frame]) -> bytes:
 
     for v2id, name in {"TIT2": "title", "TPE1": "artist",
                        "TALB": "album"}.items():
-        if v2id in id3:
-            text = id3[v2id].text[0].encode('latin1', 'replace')[:30]
-        else:
-            text = b""
+        text = id3[v2id].text[0].encode('latin1', 'replace')[:30] if v2id in id3 else b""
         v1[name] = text + (b"\x00" * (30 - len(text)))
 
-    if "COMM" in id3:
-        cmnt = id3["COMM"].text[0].encode('latin1', 'replace')[:28]
-    else:
-        cmnt = b""
+    cmnt = id3["COMM"].text[0].encode('latin1', 'replace')[:28] if "COMM" in id3 else b""
     v1["comment"] = cmnt + (b"\x00" * (29 - len(cmnt)))
 
     if "TRCK" in id3:

@@ -17,6 +17,7 @@ list of string-like values, but may have additional methods available
 depending on tag or format. They may also be entirely different objects
 for certain keys, again depending on format.
 """
+from __future__ import annotations
 
 from mutagen._file import File, FileType, StreamInfo
 from mutagen._tags import Metadata, PaddingInfo, Tags

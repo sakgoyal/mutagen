@@ -12,7 +12,7 @@ import mimetypes
 import os
 import sys
 import warnings
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from optparse import SUPPRESS_HELP, Option, OptionParser
 from typing import Final, cast, override
 
@@ -245,10 +245,7 @@ def write_files(edits: Sequence[tuple[str, str]], filenames: Sequence[str], esca
                         else:
                             picture_type = PictureType.COVER_FRONT
 
-                        if len(values) >= 4:
-                            mime = values[3]
-                        else:
-                            mime = mimetypes.guess_type(fn)[0] or "image/jpeg"
+                        mime = values[3] if len(values) >= 4 else mimetypes.guess_type(fn)[0] or "image/jpeg"
 
                         if len(values) >= 5:
                             error("APIC: Invalid format")

@@ -8,6 +8,8 @@
 
 """Read and write ASF (Window Media Audio) files."""
 
+from __future__ import annotations
+
 __all__ = ["ASF", "Open"]
 
 import contextlib

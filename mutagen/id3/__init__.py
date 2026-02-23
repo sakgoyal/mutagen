@@ -28,7 +28,6 @@ frame's documentation contains a list of its attributes.
 Since this file's documentation is a little unwieldy, you are probably
 interested in the :class:`ID3` class to start with.
 """
-
 from ._file import ID3, ID3FileType, ID3v1SaveOptions, delete
 from ._frames import (
     AENC,
@@ -222,31 +221,9 @@ from ._frames import (
 from ._id3v1 import MakeID3v1, ParseID3v1
 from ._specs import CTOCFlags, Encoding, ID3TimeStamp, PictureType
 from ._tags import ID3Tags
-from ._util import BitPaddedInt as _BitPaddedIntForPicard
-
-# deprecated
-from ._util import (
-    ID3BadCompressedData,
-    ID3BadUnsynchData,
-    ID3EncryptionUnsupportedError,
-    ID3JunkFrameError,
-    ID3NoHeaderError,
-    ID3TagError,
-    ID3UnsupportedVersionError,
-    ID3Warning,
-    error,
-)
 
 # support open(filename) as interface
 Open = ID3
-
-
-# Workaround for http://tickets.musicbrainz.org/browse/PICARD-833
-class _DummySpecForPicard:
-    write: None = None
-
-EncodedTextSpec = MultiSpec = _DummySpecForPicard
-BitPaddedInt = _BitPaddedIntForPicard
 
 
 __all__ = ['ID3', 'ID3FileType', 'Frames', 'Open', 'delete', "ID3", "ID3FileType",
@@ -271,7 +248,4 @@ __all__ = ['ID3', 'ID3FileType', 'Frames', 'Open', 'delete', "ID3", "ID3FileType
 "delete", "ID3v1SaveOptions", "Encoding", "PictureType", "CTOCFlags",
 "ID3TimeStamp", "Frames", "Frames_2_2", "Frame", "TextFrame", "UrlFrame", "UrlFrameU",
 "TimeStampTextFrame", "BinaryFrame", "NumericPartTextFrame", "NumericTextFrame",
-"PairedTextFrame", "ID3NoHeaderError", "error", "ID3UnsupportedVersionError",
-"ParseID3v1", "MakeID3v1", "ID3Tags", "ID3EncryptionUnsupportedError",
-"ID3JunkFrameError", "ID3BadUnsynchData", "ID3BadCompressedData", "ID3TagError",
-"ID3Warning"]
+"PairedTextFrame", "ParseID3v1", "MakeID3v1", "ID3Tags"]
