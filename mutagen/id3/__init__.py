@@ -85,7 +85,7 @@ WCP, WFED, WOAF, WOAR, WOAS, WORS, WPAY, WPB, WPUB, WXX, WXXX
 
 
 # Workaround for http://tickets.musicbrainz.org/browse/PICARD-833
-class _DummySpecForPicard(object):
+class _DummySpecForPicard:
     write = None
 
 EncodedTextSpec = MultiSpec = _DummySpecForPicard
